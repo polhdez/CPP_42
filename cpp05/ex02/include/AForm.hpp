@@ -9,6 +9,7 @@ class Bureaucrat;
 class AForm {
 private:
   const string _name;
+  const string _target;
   const int _gradeToSign;
   const int _gradeToExecute;
   bool _isSigned;
@@ -27,11 +28,12 @@ public:
     const char *what() const throw();
   };
   AForm();
-  AForm(const string &name, const int gradeToSign, const int gradeToExecute);
+  AForm(const string &name, const string& target, const int gradeToSign, const int gradeToExecute);
   AForm(const AForm &form);
   ~AForm();
   AForm &operator=(const AForm &form);
   const string &getName() const;
+  const string &getTarget() const;
   bool isSigned() const;
   int getGradeToSign() const;
   int getGradeToExecute() const;

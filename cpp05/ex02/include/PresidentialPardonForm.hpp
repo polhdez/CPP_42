@@ -11,7 +11,7 @@ private:
   void _pardon() const;
 
 public:
-  PresidentialPardonForm(const string &name);
+  PresidentialPardonForm(const string &name, const string &target);
   void execute(const Bureaucrat &executor) const;
 };
 

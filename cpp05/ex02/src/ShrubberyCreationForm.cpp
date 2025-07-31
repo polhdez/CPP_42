@@ -8,7 +8,7 @@
 using std::string;
 
 void ShrubberyCreationForm::_createTreeFile() const {
-  string fileName = getName() + "_shrubbery";
+  string fileName = getTarget() + "_shrubbery";
   std::ofstream file(fileName.data());
   file << "              * *    \n\
               *    *  *\n\
@@ -31,11 +31,11 @@ void ShrubberyCreationForm::_createTreeFile() const {
   file.close();
 }
 
-ShrubberyCreationForm::ShrubberyCreationForm(const string &name)
-    : AForm(name, 145, 137) {}
+ShrubberyCreationForm::ShrubberyCreationForm(const string &name,
+                                             const string &target)
+    : AForm(name, target, 145, 137) {}
 
 void ShrubberyCreationForm::execute(const Bureaucrat &executor) const {
-
   try {
     if (!isSigned())
       throw FormNotSignedException();

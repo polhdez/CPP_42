@@ -43,9 +43,10 @@ AForm::AForm() : _name("Form"), _gradeToSign(150), _gradeToExecute(150) {
   _isSigned = false;
 }
 
-AForm::AForm(const string &name, const int gradeToSign,
+AForm::AForm(const string &name, const string &target, const int gradeToSign,
              const int gradeToExecute)
-    : _name(name), _gradeToSign(gradeToSign), _gradeToExecute(gradeToExecute) {
+    : _name(name), _target(target), _gradeToSign(gradeToSign),
+      _gradeToExecute(gradeToExecute) {
   try {
     _checkValidFormGrade(gradeToSign);
     _checkValidFormGrade(gradeToExecute);
@@ -71,6 +72,7 @@ AForm &AForm::operator=(const AForm &form) {
 }
 
 const string &AForm::getName() const { return _name; }
+const string &AForm::getTarget() const { return _target; }
 bool AForm::isSigned() const { return _isSigned; }
 int AForm::getGradeToSign() const { return _gradeToSign; }
 int AForm::getGradeToExecute() const { return _gradeToExecute; }
@@ -92,9 +94,10 @@ void AForm::beExecuted(const Bureaucrat &bureaucrat) const {
 }
 
 std::ostream &operator<<(std::ostream &os, AForm &form) {
-  os << "Form with name " << form.getName() << " requires "
-     << form.getGradeToSign() << " grade to sign and "
-     << form.getGradeToExecute() << " grade to execute." << std::endl;
+  os << "Form with name " << form.getName() << " and target "
+     << form.getTarget() << " requires " << form.getGradeToSign()
+     << " grade to sign and " << form.getGradeToExecute()
+     << " grade to execute." << std::endl;
   if (form.isSigned())
     os << "The form is signed." << std::endl;
   else

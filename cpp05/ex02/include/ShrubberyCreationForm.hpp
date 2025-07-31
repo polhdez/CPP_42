@@ -11,7 +11,7 @@ private:
   void _createTreeFile() const;
 
 public:
-  ShrubberyCreationForm(const string &name);
+  ShrubberyCreationForm(const string &name, const string &target);
   void execute(const Bureaucrat &executor) const;
 };
 

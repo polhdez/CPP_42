@@ -11,7 +11,7 @@ private:
   void _robotomize() const;
 
 public:
-  RobotomyRequestForm(const string &name);
+  RobotomyRequestForm(const string &name, const string &target);
   void execute(const Bureaucrat &executor) const;
 };
 
