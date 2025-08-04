@@ -31,7 +31,7 @@ void ScalarConverter::convert(const std::string &arg) {
   std::stringstream ss("");
 
   // Nan and nanf specific case
-  if (str == "nan") {
+  if (str == "nan" || str == "nanf") {
     charStr = "impossible";
     intStr = "impossible";
     float f = numeric_limits<float>::quiet_NaN();
@@ -44,22 +44,22 @@ void ScalarConverter::convert(const std::string &arg) {
     doubleStr = ss.str();
 
     // Handle infinities
-  } else if (str == "+inf") {
+  } else if (str == "+inf" || str == "+inff") {
     charStr = "impossible";
     intStr = "impossible";
     float f = numeric_limits<float>::infinity();
-    ss << f;
+    ss << f << "f";
     floatStr = ss.str();
     ss.clear();
     ss.str("");
     double d = numeric_limits<double>::infinity();
     ss << d;
     doubleStr = ss.str();
-  } else if (str == "-inf") {
+  } else if (str == "-inf" || str == "-inff") {
     charStr = "impossible";
     intStr = "impossible";
     float f = -numeric_limits<float>::infinity();
-    ss << f;
+    ss << f << "f";
     floatStr = ss.str();
     ss.clear();
     ss.str("");
