@@ -44,7 +44,7 @@ void ScalarConverter::convert(const std::string &arg) {
     doubleStr = ss.str();
 
     // Handle infinities
-  } else if (str == "+inf" || str == "+inff") {
+  } else if (str == "+inf" || str == "+inff" || str == "inf" || str == "inff") {
     charStr = "impossible";
     intStr = "impossible";
     float f = numeric_limits<float>::infinity();
