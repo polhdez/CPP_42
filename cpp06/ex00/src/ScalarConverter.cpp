@@ -15,6 +15,7 @@ void ScalarConverter::convert(const std::string &arg) {
   if (str[str.length() - 1] == 'f')
     str.resize(str.length() - 1);
 
+  // Nan and nanf specific case
   if (str == "nan") {
     std::cout << "char: impossible\n\
 int: impossible\n\
@@ -22,8 +23,10 @@ float: nanf\n\
 double: nan" << std::endl;
     return;
   }
-
+// check for valid input, handle neg and dots
   for (size_t i = 0; i < str.length(); i++) {
+      if (i == 0 && str[i] == '-')
+          i++;
     int ndots = 0;
     if (str[i] == '.') {
       ndots++;
@@ -38,10 +41,11 @@ double: impossible"
       return;
     }
   }
-  std::stringstream ss(str);
   // Convert to long long before anything to check limits
+  std::stringstream ss(str);
   ss >> l;
-  if (l <= CHAR_MAX && l >= CHAR_MIN) {
+  // Uchar conversion
+  if (l <= UCHAR_MAX && l >= 0) {
     char c = (char)l;
     if (std::isprint(c))
       std::cout << "char: " << c << std::endl;
@@ -49,21 +53,25 @@ double: impossible"
       std::cout << "char: Non displayable" << std::endl;
   } else
     std::cout << "char: impossible" << std::endl;
-  if (l <= INT_MAX && l >= INT_MIN) {
+  // Int conversion
+  if ((l <= INT_MAX && l >= INT_MIN)) {
     int i = (int)l;
     std::cout << "int: " << i << std::endl;
   } else
     std::cout << "int: impossible" << std::endl;
+  // Clear old stringstream
   ss.clear();
   ss.str(str);
   ss >> ld;
-  if (ld <= FLT_MAX && ld >= FLT_MIN) {
+  // Float conversion
+  if ((ld <= FLT_MAX && ld >= -FLT_MAX)) {
     float f = (float)ld;
     std::cout << std::fixed << std::setprecision(1) << "float: " << f << "f"
               << std::endl;
   } else
     std::cout << "float: impossible" << std::endl;
-  if (ld <= DBL_MAX && ld >= DBL_MIN) {
+  // Double conversion
+  if ((ld <= DBL_MAX && ld >= -DBL_MAX)) {
     double d = (double)ld;
     std::cout << std::fixed << std::setprecision(1) << "double: " << d
               << std::endl;
