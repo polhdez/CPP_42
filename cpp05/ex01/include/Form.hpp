@@ -1,5 +1,4 @@
-#ifndef FORM_HPP
-#define FORM_HPP
+#pragma once
 #include <string>
 
 using std::string;
@@ -37,4 +36,3 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os, Form &form);
-#endif

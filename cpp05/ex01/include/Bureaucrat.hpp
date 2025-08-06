@@ -1,5 +1,4 @@
-#ifndef BUREAUCRAT_HPP
-#define BUREAUCRAT_HPP
+#pragma once
 #include "../include/Form.hpp"
 #include <string>
 
@@ -28,4 +27,3 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os, Bureaucrat &bureaucrat);
-#endif

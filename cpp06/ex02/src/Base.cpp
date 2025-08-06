@@ -4,6 +4,7 @@
 #include "../include/C.hpp"
 #include <cstdlib>
 #include <ctime>
+#include <exception>
 #include <iostream>
 
 Base *Base::generate() {
@@ -21,38 +22,46 @@ Base *Base::generate() {
 
 void Base::identify(Base *p) {
   A *a = dynamic_cast<A *>(p);
-  if (a != NULL) {
-    std::cout << "this is an A type pointer!" << std::endl;
+  if (a) {
+    std::cout << "This is an A type pointer!" << std::endl;
     return;
   }
   B *b = dynamic_cast<B *>(p);
-  if (b != NULL) {
-    std::cout << "this is a B type pointer!" << std::endl;
+  if (b) {
+    std::cout << "This is a B type pointer!" << std::endl;
     return;
   }
   C *c = dynamic_cast<C *>(p);
-  if (c != NULL) {
-    std::cout << "this is a C type pointer!" << std::endl;
+  if (c) {
+    std::cout << "This is a C type pointer!" << std::endl;
     return;
   }
   std::cout << "Unknown pointer." << std::endl;
 }
 
 void Base::identify(Base &p) {
-    A *a = dynamic_cast<A *>(&p);
-    if (a != NULL) {
-      std::cout << "this is an A type class!" << std::endl;
-      return;
-    }
-    B *b = dynamic_cast<B *>(&p);
-    if (b != NULL) {
-      std::cout << "this is a B type class!" << std::endl;
-      return;
-    }
-    C *c = dynamic_cast<C *>(&p);
-    if (c != NULL) {
-      std::cout << "this is a C type class!" << std::endl;
-      return;
-    }
-    std::cout << "Unknown class." << std::endl;
+  try {
+    A &a = dynamic_cast<A &>(p);
+    (void)a;
+    std::cout << "This is an A type reference!" << std::endl;
+    return;
+  } catch (std::exception &e) {
+  }
+  try {
+    B &b = dynamic_cast<B &>(p);
+    (void)b;
+    std::cout << "This is a B type reference!" << std::endl;
+    return;
+  } catch (std::exception &e) {
+  }
+  try {
+    C &c = dynamic_cast<C &>(p);
+    (void)c;
+    std::cout << "This is a C type reference!" << std::endl;
+    return;
+  } catch (std::exception &e) {
+  }
+  std::cout << "Unknown class." << std::endl;
 }
+
+Base::~Base() {};

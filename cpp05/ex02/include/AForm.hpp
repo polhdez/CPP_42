@@ -1,5 +1,4 @@
-#ifndef AFORM_HPP
-#define AFORM_HPP
+#pragma once
 #include <string>
 
 using std::string;
@@ -42,4 +41,3 @@ public:
   virtual void execute(const Bureaucrat &executor) const = 0;
 };
 std::ostream &operator<<(std::ostream &os, AForm &form);
-#endif

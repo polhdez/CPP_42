@@ -1,5 +1,4 @@
-#ifndef SHRUBBERY_CREATION_FORM_HPP
-#define SHRUBBERY_CREATION_FORM_HPP
+#pragma once
 #include "AForm.hpp"
 #include "Bureaucrat.hpp"
 #include <string>
@@ -14,5 +13,3 @@ public:
   ShrubberyCreationForm(const string &name, const string &target);
   void execute(const Bureaucrat &executor) const;
 };
-
-#endif

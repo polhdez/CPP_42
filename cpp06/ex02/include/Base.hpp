@@ -2,10 +2,10 @@
 #define BASE_HPP
 
 class Base {
-  public:
+public:
   static Base *generate();
   static void identify(Base *p);
   static void identify(Base &p);
-  virtual ~Base() = 0;
+  virtual ~Base();
 };
 #endif

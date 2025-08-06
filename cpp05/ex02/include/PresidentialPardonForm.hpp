@@ -1,5 +1,4 @@
-#ifndef PRESIDENTIAL_PARDON_FORM_HPP
-#define PRESIDENTIAL_PARDON_FORM_HPP
+#pragma once
 #include "AForm.hpp"
 #include "Bureaucrat.hpp"
 #include <string>
@@ -14,5 +13,3 @@ public:
   PresidentialPardonForm(const string &name, const string &target);
   void execute(const Bureaucrat &executor) const;
 };
-
-#endif

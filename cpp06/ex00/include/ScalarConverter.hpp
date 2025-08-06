@@ -1,5 +1,4 @@
-#ifndef SCALAR_CONVERTER_HPP
-#define SCALAR_CONVERTER_HPP
+#pragma once
 #include <string>
 
 using std::string;
@@ -14,4 +13,3 @@ private:
 public:
   static void convert(const string &str);
 };
-#endif

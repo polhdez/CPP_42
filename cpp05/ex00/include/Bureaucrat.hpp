@@ -1,5 +1,4 @@
-#ifndef BUREAUCRAT_HPP
-#define BUREAUCRAT_HPP
+#pragma once
 #include <string>
 
 using std::string;
@@ -26,4 +25,3 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os, Bureaucrat &bureaucrat);
-#endif

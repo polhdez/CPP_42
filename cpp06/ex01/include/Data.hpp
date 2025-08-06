@@ -1,5 +1,4 @@
-#ifndef DATA_HPP
-#define DATA_HPP
+#pragma once
 #include <string>
 using std::string;
 
@@ -17,4 +16,3 @@ public:
   const string &getName();
   const int &getAge();
 };
-#endif

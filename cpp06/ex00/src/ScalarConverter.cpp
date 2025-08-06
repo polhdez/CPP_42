@@ -12,12 +12,13 @@ using std::numeric_limits;
 ScalarConverter::ScalarConverter(){};
 
 ScalarConverter::ScalarConverter(const ScalarConverter &scalar) {
-  (void)scalar;
+  *this = scalar;
 };
 
 const ScalarConverter &
 ScalarConverter::operator=(const ScalarConverter &scalar) {
-  (void)scalar;
+    if (this != &scalar)
+        *this = scalar;
   return *this;
 };
 
@@ -127,8 +128,8 @@ void ScalarConverter::convert(const std::string &arg) {
       ss >> ld;
 
       // Float conversion
-      if (l <= numeric_limits<float>::max() &&
-          l >= numeric_limits<float>::min()) {
+      if (ld <= numeric_limits<float>::max() &&
+          ld >= -numeric_limits<float>::max()) {
         float f = static_cast<float>(ld);
         ss.clear();
         ss.str("");
@@ -138,8 +139,8 @@ void ScalarConverter::convert(const std::string &arg) {
         floatStr = "impossible";
 
       // Double conversion
-      if (l <= numeric_limits<double>::max() &&
-          l >= numeric_limits<double>::min()) {
+      if (ld <= numeric_limits<double>::max() &&
+          ld >= -numeric_limits<double>::max()) {
         double d = static_cast<double>(ld);
         ss.clear();
         ss.str("");

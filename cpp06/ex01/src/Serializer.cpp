@@ -1,17 +1,15 @@
 #include "../include/Serializer.hpp"
-#include <cctype>
-#include <cfloat>
-#include <climits>
 
 Serializer::Serializer(){};
 
-Serializer::Serializer(const Serializer &scalar) {
-  (void)scalar;
+Serializer::Serializer(const Serializer &serial) {
+    *this = serial;
 };
 
 const Serializer &
-Serializer::operator=(const Serializer &scalar) {
-  (void)scalar;
+Serializer::operator=(const Serializer &serial) {
+   if (this != &serial)
+       *this = serial;
   return *this;
 };
 
