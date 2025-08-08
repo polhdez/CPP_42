@@ -1,6 +1,6 @@
 #pragma once
 #include "Data.hpp"
-typedef unsigned long long uintptr_t;
+typedef unsigned long uintptr_t;
 
 class Serializer {
 private:
