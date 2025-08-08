@@ -9,11 +9,9 @@ class Form {
 private:
   const string _name;
   const int _gradeToSign;
-  const int _gradeToExecute;
   bool _isSigned;
   void _checkValidFormGrade(int grade) const;
   void _checkSignGrade(int grade) const;
-  void _checkExecuteGrade(int grade) const;
 
 public:
   class GradeTooHighException : public std::exception {
@@ -23,7 +21,7 @@ public:
     const char *what() const throw();
   };
   Form();
-  Form(const string &name, const int gradeToSign, const int gradeToExecute);
+  Form(const string &name, const int gradeToSign);
   Form(const Form &form);
   ~Form();
   Form &operator=(const Form &form);
