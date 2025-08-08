@@ -9,6 +9,7 @@ using std::string;
 
 void ShrubberyCreationForm::_createTreeFile() const {
   string fileName = getTarget() + "_shrubbery";
+  std::cout << "Creating tree file with name: " << fileName << std::endl;
   std::ofstream file(fileName.data());
   file << "              * *    \n\
               *    *  *\n\

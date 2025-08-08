@@ -85,14 +85,6 @@ void AForm::beSigned(const Bureaucrat &bureaucrat) {
   }
 }
 
-void AForm::beExecuted(const Bureaucrat &bureaucrat) const {
-  try {
-    _checkExecuteGrade(bureaucrat.getGrade());
-  } catch (std::exception &e) {
-    std::cout << e.what() << std::endl;
-  }
-}
-
 std::ostream &operator<<(std::ostream &os, AForm &form) {
   os << "Form with name " << form.getName() << " and target "
      << form.getTarget() << " requires " << form.getGradeToSign()
