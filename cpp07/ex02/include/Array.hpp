@@ -8,6 +8,10 @@ private:
   T *_arr;
 
 public:
+  Array() {
+    _arr = new T[0];
+    _arrLen = 0;
+  }
   Array(size_t n) {
     _arr = new T[n];
     _arrLen = n;
