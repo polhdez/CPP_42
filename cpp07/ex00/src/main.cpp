@@ -1,4 +1,4 @@
-#include "../include/FunTemplates.hpp"
+#include "../include/funTemplates.hpp"
 #include <iostream>
 
 int main(void) {

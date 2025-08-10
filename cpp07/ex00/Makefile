@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Werror -Wextra -std=c++98
 NAME  = templates
 SRC_DIR := src
 INCLUDES_DIR := include
-INCLUDES := $(INCLUDES_DIR)/FunTemplates.hpp
+INCLUDES := $(INCLUDES_DIR)/funTemplates.hpp
 SRCS := $(SRC_DIR)/main.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
