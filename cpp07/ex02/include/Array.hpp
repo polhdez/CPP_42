@@ -1,6 +1,6 @@
 #pragma once
 #include <cstddef>
-#include <stdexcept>
+#include <exception>
 
 template <typename T> class Array {
 private:
@@ -8,6 +8,9 @@ private:
   T *_arr;
 
 public:
+  class OutOfBoundsException : public std::exception {
+    const char *what() const throw() { return "Index out of bounds!"; }
+  };
   Array() {
     _arr = new T[0];
     _arrLen = 0;
@@ -38,10 +41,9 @@ public:
 
   T &operator[](size_t i) {
     if (i >= _arrLen)
-      throw std::exception();
+      throw OutOfBoundsException();
     else
       return _arr[i];
   }
-
   size_t size() { return _arrLen; };
 };
