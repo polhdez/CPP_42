@@ -1,11 +1,6 @@
-#ifndef BASE_HPP
-#define BASE_HPP
+#pragma once
 
 class Base {
 public:
-  static Base *generate();
-  static void identify(Base *p);
-  static void identify(Base &p);
-  virtual ~Base();
+  virtual ~Base() {};
 };
-#endif

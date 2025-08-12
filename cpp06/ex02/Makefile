@@ -8,8 +8,7 @@ INCLUDES := $(INCLUDES_DIR)/A.hpp \
 $(INCLUDES_DIR)/B.hpp \
 $(INCLUDES_DIR)/C.hpp \
 $(INCLUDES_DIR)/Base.hpp
-SRCS := $(SRC_DIR)/main.cpp \
-$(SRC_DIR)/Base.cpp
+SRCS := $(SRC_DIR)/main.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
 LDFLAGS :=
