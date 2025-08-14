@@ -1,8 +1,5 @@
 #include "../include/MutantStack.hpp"
-#include <cstdlib>
-#include <exception>
 #include <iostream>
-#include <sstream>
 
 void printMsg(std::string msg) {
   std::cout << "\033[1;32m" << msg << "\033[0m" << std::endl;
