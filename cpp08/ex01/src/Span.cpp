@@ -1,5 +1,6 @@
 #include "../include/Span.hpp"
 #include <cstdlib>
+#include <iterator>
 
 // Custom exceptions
 
@@ -11,57 +12,36 @@ const char *Span::NotEnoughValuesException::what() const throw() {
   return "not enough values to calculate!";
 }
 
+Span::Span(unsigned int size) : _maxSize(size) {};
+
 // Canonical stuff
-
-Span::Span(){};
-
-Span::Span(unsigned int size) {
-  _arrSize = size;
-  _nItems = 0;
-  _arr = new int[size];
-}
-
-Span::Span(const Span &span) {
-  _arrSize = span._arrSize;
-  _arr = new int[_arrSize];
-  for (unsigned int i = 0; i < _arrSize; i++) {
-    _arr[i] = span._arr[i];
-  }
-}
-
-Span &Span::operator=(const Span &span) {
-  if (this != &span) {
-    delete[] _arr;
-    _arrSize = span._arrSize;
-    _arr = new int[_arrSize];
-    for (unsigned int i = 0; i < _arrSize; i++) {
-      _arr[i] = span._arr[i];
-    }
-  }
-  return *this;
-}
-
-Span::~Span() { delete[] _arr; }
-
 void Span::addNumber(int n) {
-  if (_nItems >= _arrSize)
-    throw FullSpanException();
+  if (this->size() < _maxSize)
+    this->push_back(n);
   else
-    _arr[_nItems++] = n;
+    throw FullSpanException();
 }
 
-// Methods
+void Span::addNumbers(std::vector<int>::iterator begin,
+                      std::vector<int>::iterator end) {
+  if (std::distance(begin, end) + this->size() <= _maxSize)
+    this->insert(this->end(), begin, end);
+  else
+    throw FullSpanException();
+}
 
 int Span::shortestSpan() {
   int small = 0;
   int absN;
   bool populated = false;
-  if (_nItems < 2)
+  if (this->size() < 2)
     throw NotEnoughValuesException();
-  for (unsigned int i = 0; i < _nItems; i++) {
-    for (unsigned int j = 0; j < _nItems; j++) {
-      absN = std::abs(_arr[i] - _arr[j]);
-      if (i != j && (!populated || absN < small)) {
+  for (vector<int>::iterator firstIt = this->begin(); firstIt != this->end();
+       firstIt++) {
+    for (vector<int>::iterator secondIt = this->begin();
+         secondIt != this->end(); secondIt++) {
+      absN = std::abs(*firstIt - *secondIt);
+      if (firstIt != secondIt && (!populated || absN < small)) {
         small = absN;
         populated = true;
       }
@@ -74,12 +54,14 @@ int Span::longestSpan() {
   int big = 0;
   int absN;
   bool populated = false;
-  if (_nItems < 2)
+  if (this->size() < 2)
     throw NotEnoughValuesException();
-  for (unsigned int i = 0; i < _nItems; i++) {
-    for (unsigned int j = 0; j < _nItems; j++) {
-      absN = std::abs(_arr[i] - _arr[j]);
-      if (i != j && (!populated || absN > big)) {
+  for (vector<int>::iterator firstIt = this->begin(); firstIt != this->end();
+       firstIt++) {
+    for (vector<int>::iterator secondIt = this->begin();
+         secondIt != this->end(); secondIt++) {
+      absN = std::abs(*firstIt - *secondIt);
+      if (firstIt != secondIt && (!populated || absN > big)) {
         big = absN;
         populated = true;
       }

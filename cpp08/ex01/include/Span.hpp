@@ -1,12 +1,10 @@
 #pragma once
 #include <exception>
+#include <vector>
 
-class Span {
+class Span : public std::vector<int> {
 private:
-  int *_arr;
-  unsigned int _arrSize;
-  unsigned int _nItems;
-  Span();
+  unsigned int _maxSize;
 public:
   class FullSpanException : public std::exception {
     const char *what() const throw();
@@ -15,10 +13,9 @@ public:
     const char *what() const throw();
   };
   Span(unsigned int size);
-  Span(const Span &span);
-  Span &operator=(const Span &span);
-  ~Span();
   void addNumber(int n);
+  void addNumbers(std::vector<int>::iterator begin,
+                  std::vector<int>::iterator end);
   int shortestSpan();
   int longestSpan();
 };
