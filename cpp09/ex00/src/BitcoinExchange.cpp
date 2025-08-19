@@ -11,7 +11,6 @@
 #include <vector>
 
 using std::map;
-using std::pair;
 using std::string;
 using std::tm;
 using std::vector;
@@ -160,34 +159,15 @@ BitcoinExchange::_inputFileToMap(string filePath) {
     ss.clear();
     ss << line.substr(date.length() + 3);
     long double value;
-    std::cout << "debug value: " << value << std::endl;
     if (!(ss >> value) || value > 1000 || value < 0) {
       std::cerr << "Error: bad value in input.txt!: " << value << std::endl;
       continue;
     }
     time_t epoch = _dateToEpoch(date);
-    if (_dbMap->find(epoch) != _dbMap->end()) {
-      (*inputMap)[epoch] = std::vector<float>();
-    }
     (*inputMap)[epoch].push_back(value);
   }
   return inputMap;
 }
-/*
-BitcoinExchange::BitcoinExchange(string dbPath, string inputPath) {
-  _dbMap = _dbFileToMap(dbPath);
-  _inputMap = _inputFileToMap(inputPath);
-  std::map<time_t, vector<float> >::iterator mIt;
-  for (mIt = _inputMap->begin(); mIt != _inputMap->end(); ++mIt) {
-    std::cout << "Date: " << _epochToDate(mIt->first) << " Values: ";
-    for (vector<float>::iterator vIt = mIt->second.begin();
-         vIt != mIt->second.end(); ++vIt) {
-      std::cout << *vIt << ", ";
-    }
-    std::cout << std::endl;
-  }
-}
-*/
 
 BitcoinExchange::BitcoinExchange(string dbPath, string inputPath) {
   _dbMap = _dbFileToMap(dbPath);
