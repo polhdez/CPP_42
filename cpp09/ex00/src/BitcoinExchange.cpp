@@ -1,4 +1,5 @@
 #include "../include/BitcoinExchange.hpp"
+#include <cstddef>
 #include <cstdlib>
 #include <ctime>
 #include <exception>
@@ -16,7 +17,7 @@ using std::tm;
 using std::vector;
 
 time_t BitcoinExchange::_dateToEpoch(string date) {
-  struct tm tm;
+  struct tm tm = {};
   time_t epoch;
   if (strptime(date.c_str(), "%Y-%m-%d", &tm))
     epoch = timegm(&tm);
@@ -27,29 +28,30 @@ time_t BitcoinExchange::_dateToEpoch(string date) {
 
 string BitcoinExchange::_epochToDate(time_t epoch) {
   char dateBuf[11];
-  if(!strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", gmtime(&epoch)))
+  if (!strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", gmtime(&epoch)))
     throw std::exception();
   return string(dateBuf);
 }
 
 time_t BitcoinExchange::_findNearestEpoch(time_t epoch) {
-    if (_dbMap->find(epoch) == _dbMap->end()) {
-        time_t nearest = _dbMap->begin()->first;
-        for (map<time_t, float >::iterator it = _dbMap->begin(); it != _dbMap->end(); ++it) {
-            if (epoch > nearest && epoch < it->first) {
-                epoch = nearest;
-                break;
-            }
-            nearest = it->first;
-        }
+  if (_dbMap->find(epoch) == _dbMap->end()) {
+    time_t nearest = _dbMap->begin()->first;
+    for (map<time_t, float>::iterator it = _dbMap->begin(); it != _dbMap->end();
+         ++it) {
+      if (epoch > nearest && epoch < it->first) {
+        epoch = nearest;
+        break;
+      }
+      nearest = it->first;
     }
-    return epoch;
+  }
+  return epoch;
 }
 
 float BitcoinExchange::_multiplyRateByDate(time_t epoch, float value) {
-   epoch = _findNearestEpoch(epoch);
-   float rate = (*_dbMap)[epoch];
-   return value * rate;
+  epoch = _findNearestEpoch(epoch);
+  float rate = (*_dbMap)[epoch];
+  return value * rate;
 }
 
 bool BitcoinExchange::_isValidDate(string date) {
@@ -89,20 +91,20 @@ bool BitcoinExchange::_isValidDate(string date) {
   return true;
 }
 
-std::map<time_t, float > *
-BitcoinExchange::_dbFileToMap(string filePath) {
+std::map<time_t, float> *BitcoinExchange::_dbFileToMap(string filePath) {
   std::ifstream dbFile(filePath.c_str());
   if (!dbFile.good())
     throw std::exception();
 
   string line, date, value;
-  std::map<time_t,  float > *dbMap = new std::map<time_t, float >;
+  std::map<time_t, float> *dbMap = new std::map<time_t, float>;
 
   // Handle the first line
   std::getline(dbFile, line);
-  if (line != "date,exchange_rate")
-    throw std::exception();
-
+  if (line != "date,exchange_rate") {
+    std::cerr << "[!] First line in .csv not found!" << std::endl;
+    return NULL;
+  }
   // We got to the values, lets parse!
   std::stringstream ss;
   while (std::getline(dbFile, line)) {
@@ -110,7 +112,7 @@ BitcoinExchange::_dbFileToMap(string filePath) {
     date = line.substr(0, line.find(","));
     // Call our date format checker
     if (!_isValidDate(date)) {
-      std::cerr << "Error: bad date in .csv: " << date << std::endl;
+      std::cerr << "[!] Error: bad date in .csv: " << date << std::endl;
       continue;
     }
     // Here we put everything after the "," inside a stringstream
@@ -119,7 +121,7 @@ BitcoinExchange::_dbFileToMap(string filePath) {
     ss << line.substr(date.length() + 1);
     long double value;
     if (!(ss >> value)) {
-      std::cerr << "Error: bad value in .csv: " << value << std::endl;
+      std::cerr << "[!] Error: bad value in .csv: " << value << std::endl;
       continue;
     }
     time_t epoch = _dateToEpoch(date);
@@ -132,8 +134,10 @@ BitcoinExchange::_dbFileToMap(string filePath) {
 std::map<time_t, vector<float> > *
 BitcoinExchange::_inputFileToMap(string filePath) {
   std::ifstream inputFile(filePath.c_str());
-  if (!inputFile.good())
-    throw std::exception();
+  if (!inputFile.good()) {
+    std::cerr << "Error: Cannot open " << filePath << std::endl;
+    return NULL;
+  }
 
   string line, date, value;
   std::map<time_t, vector<float> > *inputMap =
@@ -141,9 +145,11 @@ BitcoinExchange::_inputFileToMap(string filePath) {
 
   // Handle the first line
   std::getline(inputFile, line);
-  if (line != "date | value")
-    throw std::exception();
-
+  if (line != "date | value") {
+    std::cerr << "[!] Error: First line in " << filePath << "is missing"
+              << std::endl;
+    return NULL;
+  }
   // We got to the values, lets parse!
   std::stringstream ss;
   while (std::getline(inputFile, line)) {
@@ -151,7 +157,7 @@ BitcoinExchange::_inputFileToMap(string filePath) {
     date = line.substr(0, line.find(" | "));
     // Call our date format checker
     if (!_isValidDate(date)) {
-      std::cerr << "Error: bad date in input.txt!: " << date << std::endl;
+      std::cerr << "[!] Error: bad input => " << date << std::endl;
       continue;
     }
     // Here we put everything after the " | " inside a stringstream
@@ -159,29 +165,62 @@ BitcoinExchange::_inputFileToMap(string filePath) {
     ss.clear();
     ss << line.substr(date.length() + 3);
     long double value;
-    if (!(ss >> value) || value > 1000 || value < 0) {
-      std::cerr << "Error: bad value in input.txt!: " << value << std::endl;
-      continue;
+    if (!(ss >> value))
+      std::cerr << "[!] Error: bad value in input!" << std::endl;
+    else if (value > 1000)
+      std::cerr << "[!] Error: " << value << " is too large of a number"
+                << std::endl;
+    else if (value < 0)
+      std::cerr << "[!] Error: " << value << " is not a positive number"
+                << std::endl;
+    else {
+      time_t epoch = _dateToEpoch(date);
+      (*inputMap)[epoch].push_back(value);
     }
-    time_t epoch = _dateToEpoch(date);
-    (*inputMap)[epoch].push_back(value);
   }
   return inputMap;
 }
 
 BitcoinExchange::BitcoinExchange(string dbPath, string inputPath) {
+  std::cout << "[*] Loading csv into a map" << std::endl;
   _dbMap = _dbFileToMap(dbPath);
+  if (!_dbMap) {
+    std::cerr << dbPath << " couldnt be loaded, quitting!" << std::endl;
+    return;
+  }
+  std::cout << "[*] Loading " << inputPath << " into a map" << std::endl;
   _inputMap = _inputFileToMap(inputPath);
+  if (!_inputMap) {
+    std::cerr << inputPath << " couldnt be loaded, quitting!" << std::endl;
+    return;
+  }
+  std::cerr << "[*] Displaying Bitcoin rates!" << std::endl;
   std::map<time_t, vector<float> >::iterator mIt;
   for (mIt = _inputMap->begin(); mIt != _inputMap->end(); ++mIt) {
     time_t epoch = mIt->first;
     string date = _epochToDate(epoch);
     for (vector<float>::iterator vIt = mIt->second.begin();
          vIt != mIt->second.end(); ++vIt) {
-    float rate = _multiplyRateByDate(epoch, *vIt);
+      float rate = _multiplyRateByDate(epoch, *vIt);
       std::cout << date << " => " << *vIt << " = " << rate << std::endl;
+    }
   }
 }
+
+BitcoinExchange::~BitcoinExchange() {
+  delete _dbMap;
+  delete _inputMap;
 }
 
-BitcoinExchange::~BitcoinExchange() { delete _dbMap; }
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &be) {
+    _dbMap = new map<time_t, float>(*be._dbMap);
+    _inputMap = new map<time_t, vector<float> >(*be._inputMap);
+}
+
+BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange& be) {
+    if (this != &be) {
+        _dbMap = new map<time_t, float>(*be._dbMap);
+        _inputMap = new map<time_t, vector<float> >(*be._inputMap);
+    }
+    return *this;
+}

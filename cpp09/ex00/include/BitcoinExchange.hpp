@@ -24,4 +24,6 @@ private:
 public:
   BitcoinExchange(string dbPath, string inputPath);
   ~BitcoinExchange();
+  BitcoinExchange(const BitcoinExchange &be);
+  BitcoinExchange &operator=(const BitcoinExchange& be);
 };
