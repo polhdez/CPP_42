@@ -2,19 +2,19 @@
 #include <ctime>
 #include <map>
 #include <string>
-#include <vector>
+#include <list>
 
 using std::map;
 using std::pair;
 using std::string;
-using std::vector;
+using std::list;
 
 class BitcoinExchange {
 private:
   map<time_t, float> *_dbMap;
-  map<time_t, vector<float> > *_inputMap;
+  map<time_t, list<float> > *_inputMap;
   map<time_t, float > *_dbFileToMap(string path);
-  map<time_t, vector<float> > *_inputFileToMap(string path);
+  map<time_t, list<float> > *_inputFileToMap(string path);
   time_t _dateToEpoch(string date);
   string _epochToDate(time_t epoch);
   float _multiplyRateByDate(time_t epoch, float value);

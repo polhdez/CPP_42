@@ -9,12 +9,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
+#include <list>
 
 using std::map;
 using std::string;
 using std::tm;
-using std::vector;
+using std::list;
 
 time_t BitcoinExchange::_dateToEpoch(string date) {
   struct tm tm = {};
@@ -131,7 +131,7 @@ std::map<time_t, float> *BitcoinExchange::_dbFileToMap(string filePath) {
   return dbMap;
 }
 
-std::map<time_t, vector<float> > *
+std::map<time_t, list<float> > *
 BitcoinExchange::_inputFileToMap(string filePath) {
   std::ifstream inputFile(filePath.c_str());
   if (!inputFile.good()) {
@@ -140,8 +140,8 @@ BitcoinExchange::_inputFileToMap(string filePath) {
   }
 
   string line, date, value;
-  std::map<time_t, vector<float> > *inputMap =
-      new std::map<time_t, vector<float> >;
+  std::map<time_t, list<float> > *inputMap =
+      new std::map<time_t, list<float> >;
 
   // Handle the first line
   std::getline(inputFile, line);
@@ -195,11 +195,11 @@ BitcoinExchange::BitcoinExchange(string dbPath, string inputPath) {
     return;
   }
   std::cerr << "[*] Displaying Bitcoin rates!" << std::endl;
-  std::map<time_t, vector<float> >::iterator mIt;
+  std::map<time_t, list<float> >::iterator mIt;
   for (mIt = _inputMap->begin(); mIt != _inputMap->end(); ++mIt) {
     time_t epoch = mIt->first;
     string date = _epochToDate(epoch);
-    for (vector<float>::iterator vIt = mIt->second.begin();
+    for (list<float>::iterator vIt = mIt->second.begin();
          vIt != mIt->second.end(); ++vIt) {
       float rate = _multiplyRateByDate(epoch, *vIt);
       std::cout << date << " => " << *vIt << " = " << rate << std::endl;
@@ -214,13 +214,13 @@ BitcoinExchange::~BitcoinExchange() {
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &be) {
     _dbMap = new map<time_t, float>(*be._dbMap);
-    _inputMap = new map<time_t, vector<float> >(*be._inputMap);
+    _inputMap = new map<time_t, list<float> >(*be._inputMap);
 }
 
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange& be) {
     if (this != &be) {
         _dbMap = new map<time_t, float>(*be._dbMap);
-        _inputMap = new map<time_t, vector<float> >(*be._inputMap);
+        _inputMap = new map<time_t, list<float> >(*be._inputMap);
     }
     return *this;
 }
