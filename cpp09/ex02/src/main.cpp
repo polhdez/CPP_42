@@ -25,13 +25,11 @@ void printVecOfVec(VecOfIntVec vecOfVec) {
   }
   std::cout << "]" << std::endl;
 }
-
+/*
 void mergeSort(VecOfIntVec &vecOfVec) {
-
   // Initialize values so we work with even numbers while merging
   bool remain;
   int nMerges;
-
   // Merge mindfuck
   do {
       printVecOfVec(vecOfVec);
@@ -55,6 +53,50 @@ void mergeSort(VecOfIntVec &vecOfVec) {
     vecOfVec = newVecOfVec;
   } while (nMerges > 0);
 }
+*/
+
+void mergeSort(VecOfIntVec &vecOfVec) {
+  bool remain;
+  int nMerges;
+  int order = 1;
+  int halfListSize = vecOfVec.size() / 2;
+  // Merge sort until the first sublist is bigger than the amount of numbers
+  do {
+      std::cout << order << std::endl;
+      printVecOfVec(vecOfVec);
+    if (vecOfVec.size() % 2) {
+      nMerges = vecOfVec.size() - 1;
+      remain = true;
+    } else {
+      nMerges = vecOfVec.size();
+      remain = false;
+    }
+    VecOfIntVec newVecOfVec;
+    for (int i = 0; i < nMerges; i += 2) {
+      if (vecOfVec[i].back() > vecOfVec[i + 1].front())
+        std::swap(vecOfVec[i], vecOfVec[i + 1]);
+      vector<int> tmp = vecOfVec[i];
+      tmp.insert(tmp.end(), vecOfVec[i + 1].begin(), vecOfVec[i + 1].end());
+      newVecOfVec.push_back(tmp);
+    }
+    if (remain)
+      newVecOfVec.push_back(vecOfVec.back());
+    vecOfVec = newVecOfVec;
+  } while (vecOfVec.front().size() <= halfListSize);
+  // Insertion fun!
+  VecOfIntVec mainVec;
+  VecOfIntVec pendVec;
+  vector<int> waitVec;
+  mainVec.push_back(vecOfVec[0]);
+  mainVec.push_back(vecOfVec[1]);
+  // Check if the last vec size is smaller than the others because we cant pair it
+  if (vecOfVec[3].size() < vecOfVec[1].size())
+      waitVec = vecOfVec[3];
+  else
+      mainVec.push_back(vecOfVec[2]);
+
+}
+
 
 bool argsToVec(int argc, char **argv, VecOfIntVec &vecOfVec) {
   for (int i = 1; i < argc; i++) {
