@@ -9,6 +9,16 @@ using std::vector;
 
 typedef vector<vector<int> > VecOfIntVec;
 
+void printVec(vector<int> vec) {
+  std::cout << "[";
+  for (vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
+    std::cout << *it;
+    if (it + 1 != vec.end())
+      std::cout << ", ";
+  }
+  std::cout << "]" << std::endl;
+}
+
 void printVecOfVec(VecOfIntVec vecOfVec) {
   std::cout << "[";
   for (VecOfIntVec::iterator vIt = vecOfVec.begin(); vIt != vecOfVec.end();
@@ -25,35 +35,49 @@ void printVecOfVec(VecOfIntVec vecOfVec) {
   }
   std::cout << "]" << std::endl;
 }
-/*
-void mergeSort(VecOfIntVec &vecOfVec) {
-  // Initialize values so we work with even numbers while merging
-  bool remain;
-  int nMerges;
-  // Merge mindfuck
-  do {
-      printVecOfVec(vecOfVec);
-    if (vecOfVec.size() % 2) {
-      nMerges = vecOfVec.size() - 1;
-      remain = true;
-    } else {
-      nMerges = vecOfVec.size();
-      remain = false;
-    }
-    VecOfIntVec newVecOfVec;
-    for (int i = 0; i < nMerges; i += 2) {
-      if (vecOfVec[i].back() > vecOfVec[i + 1].front())
-        std::swap(vecOfVec[i], vecOfVec[i + 1]);
-      vector<int> tmp = vecOfVec[i];
-      tmp.insert(tmp.end(), vecOfVec[i + 1].begin(), vecOfVec[i + 1].end());
-      newVecOfVec.push_back(tmp);
-    }
-    if (remain)
-      newVecOfVec.push_back(vecOfVec.back());
-    vecOfVec = newVecOfVec;
-  } while (nMerges > 0);
+
+int getBiggestFromVec(vector<int> vec) {
+  int big = 0;
+  for (vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
+    if (*it > big)
+      big = *it;
+  }
+  return big;
 }
-*/
+
+void processMainPend(VecOfIntVec &main, VecOfIntVec &pend, vector<int> &wait) {
+  VecOfIntVec newMain;
+  VecOfIntVec newPend;
+  vector<int> newWait;
+
+  int elementMainSize = main.front().size() / 2;
+  for (int i = 0; i < main.size(); i++) {
+    vector<int> splitVecOne;
+    vector<int> splitVecTwo;
+    for (int j = 0; j < main[i].size(); j++) {
+      if (j < elementMainSize)
+        splitVecOne.push_back(main[i][j]);
+      else
+        splitVecTwo.push_back(main[i][j]);
+    }
+    if (i == 0) {
+        newMain.push_back(splitVecOne);
+        newMain.push_back(splitVecTwo);
+    } else {
+        newPend.push_back(splitVecOne);
+        newMain.push_back(splitVecTwo);
+    }
+  }
+  if (wait.size() >= elementMainSize) {
+      vector<int> elementFromWait;
+      elementFromWait.insert(elementFromWait.end(), wait.begin(), wait.begin() + elementMainSize);
+      newPend.push_back(elementFromWait);
+      newWait.insert(newWait.end(), wait.begin() + elementMainSize, wait.end());
+  }
+  main = newMain;
+  pend = newPend;
+  wait = newWait;
+}
 
 void mergeSort(VecOfIntVec &vecOfVec) {
   bool remain;
@@ -62,8 +86,7 @@ void mergeSort(VecOfIntVec &vecOfVec) {
   int halfListSize = vecOfVec.size() / 2;
   // Merge sort until the first sublist is bigger than the amount of numbers
   do {
-      std::cout << order << std::endl;
-      printVecOfVec(vecOfVec);
+    printVecOfVec(vecOfVec);
     if (vecOfVec.size() % 2) {
       nMerges = vecOfVec.size() - 1;
       remain = true;
@@ -73,7 +96,8 @@ void mergeSort(VecOfIntVec &vecOfVec) {
     }
     VecOfIntVec newVecOfVec;
     for (int i = 0; i < nMerges; i += 2) {
-      if (vecOfVec[i].back() > vecOfVec[i + 1].front())
+      if (getBiggestFromVec(vecOfVec[i]) > getBiggestFromVec(vecOfVec[i + 1]) &&
+          vecOfVec[i].size() == vecOfVec[i + 1].size())
         std::swap(vecOfVec[i], vecOfVec[i + 1]);
       vector<int> tmp = vecOfVec[i];
       tmp.insert(tmp.end(), vecOfVec[i + 1].begin(), vecOfVec[i + 1].end());
@@ -82,21 +106,10 @@ void mergeSort(VecOfIntVec &vecOfVec) {
     if (remain)
       newVecOfVec.push_back(vecOfVec.back());
     vecOfVec = newVecOfVec;
-  } while (vecOfVec.front().size() <= halfListSize);
-  // Insertion fun!
-  VecOfIntVec mainVec;
-  VecOfIntVec pendVec;
-  vector<int> waitVec;
-  mainVec.push_back(vecOfVec[0]);
-  mainVec.push_back(vecOfVec[1]);
-  // Check if the last vec size is smaller than the others because we cant pair it
-  if (vecOfVec[3].size() < vecOfVec[1].size())
-      waitVec = vecOfVec[3];
-  else
-      mainVec.push_back(vecOfVec[2]);
-
+  } while (vecOfVec.front().size() * 2 < halfListSize);
+  std::cout << "After merge sort" << std::endl;
+  printVecOfVec(vecOfVec);
 }
-
 
 bool argsToVec(int argc, char **argv, VecOfIntVec &vecOfVec) {
   for (int i = 1; i < argc; i++) {
