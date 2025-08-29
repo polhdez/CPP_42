@@ -113,9 +113,10 @@ private:
       main.insert(pos, newPend.at(*it));
     }
   }
-
-public:
   PmergeMe() {};
+  PmergeMe(PmergeMe &pmergeMe) {};
+  PmergeMe<C, CC> &operator=(const PmergeMe &be) { return *this; }
+public:
   PmergeMe(C vec) {
     std::cout << "Before";
     _printVec(vec);
@@ -124,8 +125,6 @@ public:
     _printVec(vec);
   }
   ~PmergeMe() {};
-  PmergeMe(PmergeMe &pmergeMe) {};
-  PmergeMe<C, CC> &operator=(const PmergeMe &be) { return *this; }
 };
 
 template <typename C> C argsToContainer(int argc, char **argv) {
