@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <sys/time.h>
 
 using std::string;
 
@@ -15,15 +16,14 @@ private:
   void _mergeInsertionSort(C &main);
 
 public:
-PmergeMe();
-PmergeMe(C vec);
-~PmergeMe();
-PmergeMe(const PmergeMe &pmergeMe);
-PmergeMe &operator=(const PmergeMe& pmergeMe);
+  PmergeMe();
+  PmergeMe(C vec);
+  ~PmergeMe();
+  PmergeMe(const PmergeMe &pmergeMe);
+  PmergeMe &operator=(const PmergeMe &pmergeMe);
 };
 
-template <typename C, typename CC>
-void PmergeMe<C,CC>::_printVec(C vec) {
+template <typename C, typename CC> void PmergeMe<C, CC>::_printVec(C vec) {
   std::cout << "[";
   for (typename C::iterator it = vec.begin(); it != vec.end(); ++it) {
     std::cout << *it;
@@ -34,13 +34,12 @@ void PmergeMe<C,CC>::_printVec(C vec) {
 }
 
 template <typename C, typename CC>
-void PmergeMe<C,CC>::_printVecOfVec(CC vecOfVec) {
+void PmergeMe<C, CC>::_printVecOfVec(CC vecOfVec) {
   std::cout << "[";
-  for (typename CC::iterator vIt = vecOfVec.begin();
-       vIt != vecOfVec.end(); ++vIt) {
+  for (typename CC::iterator vIt = vecOfVec.begin(); vIt != vecOfVec.end();
+       ++vIt) {
     std::cout << "[";
-    for (typename C::iterator it = vIt->begin(); it != vIt->end();
-         ++it) {
+    for (typename C::iterator it = vIt->begin(); it != vIt->end(); ++it) {
       std::cout << *it;
       if (it + 1 != vIt->end())
         std::cout << ", ";
@@ -90,7 +89,7 @@ C PmergeMe<C, CC>::_getJacobsthalInsertionOrder(int n) {
 }
 
 template <typename C, typename CC>
-void PmergeMe<C,CC>::_mergeInsertionSort(C &main) {
+void PmergeMe<C, CC>::_mergeInsertionSort(C &main) {
   CC pairs;
 
   int extra = -1;
@@ -112,42 +111,38 @@ void PmergeMe<C,CC>::_mergeInsertionSort(C &main) {
   }
   C newMain;
   C newPend;
-  for (typename CC::iterator it = pairs.begin();
-       it != pairs.end(); ++it) {
+  for (typename CC::iterator it = pairs.begin(); it != pairs.end(); ++it) {
     newMain.push_back(it->back());
     newPend.push_back(it->front());
   }
-
-  std::cout << "[*] Updated pairs: " << std::endl;
-  _printVecOfVec(pairs);
   if (extra != -1) {
-    std::cout << "[*] Extra: " << std::endl;
-    std::cout << extra << std::endl;
     newPend.push_back(extra);
   }
   if (newMain.size() > 1)
     _mergeInsertionSort(newMain);
   main = newMain;
   C jacobSeq = _getJacobsthalInsertionOrder(newPend.size());
-  for (typename C::iterator it = jacobSeq.begin(); it != jacobSeq.end();
-       ++it) {
+  for (typename C::iterator it = jacobSeq.begin(); it != jacobSeq.end(); ++it) {
     typename C::iterator pos =
         std::lower_bound(main.begin(), main.end(), newPend.at(*it));
     main.insert(pos, newPend.at(*it));
   }
-  std::cout << "Sorted!" << std::endl;
-  _printVec(main);
 }
-template <typename C, typename CC> PmergeMe<C,CC>::~PmergeMe(){};
 
-template <typename C, typename CC> PmergeMe<C,CC>::PmergeMe() {};
+template <typename C, typename CC> PmergeMe<C, CC>::~PmergeMe(){};
 
-template <typename C, typename CC> PmergeMe<C,CC>::PmergeMe(C vec) {
+template <typename C, typename CC> PmergeMe<C, CC>::PmergeMe(){};
+
+template <typename C, typename CC> PmergeMe<C, CC>::PmergeMe(C vec) {
+  std::cout << "Before";
+  _printVec(vec);
   _mergeInsertionSort(vec);
+  std::cout << "After: ";
+  _printVec(vec);
 }
 
 template <typename C, typename CC>
-PmergeMe<C,CC> &PmergeMe<C,CC>::operator=(const PmergeMe &be) {
+PmergeMe<C, CC> &PmergeMe<C, CC>::operator=(const PmergeMe &be) {
   return *this;
 }
 
@@ -162,6 +157,5 @@ template <typename C> C argsToContainer(int argc, char **argv) {
   }
   return vec;
 }
-
 
 template <typename C> C argsToContainer(int argc, char **argv);
