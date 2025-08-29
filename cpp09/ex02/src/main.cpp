@@ -1,4 +1,5 @@
 // #include "../include/RPN.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <utility>
@@ -36,13 +37,46 @@ void printVecOfVec(vector<vector<int> > vecOfVec) {
   std::cout << "]" << std::endl;
 }
 
-int getBiggestFromVec(vector<int> vec) {
-  int big = 0;
-  for (vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
-    if (*it > big)
-      big = *it;
-  }
-  return big;
+int jacobsthal(int n) {
+    if (!n)
+        return 0;
+    if (n == 1)
+        return 1;
+    return jacobsthal(n - 1) + 2 * jacobsthal(n - 2);
+}
+
+// Redo this its ai powered
+std::vector<int> getJacobsthalInsertionOrder(int n) {
+    std::vector<int> jacobsthal;
+    jacobsthal.push_back(0);
+    jacobsthal.push_back(1);
+    while (true) {
+        int next = jacobsthal[jacobsthal.size() - 1] + 2 * jacobsthal[jacobsthal.size() - 2];
+        if (next >= n) break;
+        jacobsthal.push_back(next);
+    }
+
+    // Build insertion order starting from largest Jacobsthal <= n
+    std::vector<int> order;
+    std::vector<bool> used(n, false);
+
+    for (int i = (int)jacobsthal.size() - 1; i >= 0; --i) {
+        int idx = jacobsthal[i];
+        if (idx < n && !used[idx]) {
+            order.push_back(idx);
+            used[idx] = true;
+        }
+    }
+
+    // Add remaining indices in ascending order
+    for (int i = 0; i < n; ++i) {
+        if (!used[i]) {
+            order.push_back(i);
+            used[i] = true;
+        }
+    }
+
+    return order;
 }
 
 void mergeSort(vector<int>& main) {
@@ -72,18 +106,26 @@ void mergeSort(vector<int>& main) {
         newPend.push_back(it->front());
     }
 
+    std::cout << "[*] Updated pairs: " << std::endl;
+    printVecOfVec(pairs);
     if (extra != -1) {
         std::cout << "[*] Extra: " << std::endl;
         std::cout << extra << std::endl;
+        newPend.push_back(extra);
     }
-    std::cout << "[*] Updated pairs: " << std::endl;
-    printVecOfVec(pairs);
-    std::cout << "[*] newMain: " << std::endl;
-    printVec(newMain);
-    std::cout << "[*] newPend: " << std::endl;
-    printVec(newPend);
     if (newMain.size() > 1)
         mergeSort(newMain);
+
+    main = newMain;
+
+    vector<int> jacobSeq = getJacobsthalInsertionOrder(newPend.size());
+    for (vector<int>::iterator it=jacobSeq.begin(); it != jacobSeq.end(); ++it) {
+        vector<int>::iterator pos = std::lower_bound(main.begin(), main.end(), newPend[*it]);
+        main.insert(pos, newPend[*it]);
+    }
+    std::cout << "Sorted!" << std::endl;
+    printVec(main);
+
 }
 
 bool argsToVec(int argc, char **argv, vector<int> &vec) {
