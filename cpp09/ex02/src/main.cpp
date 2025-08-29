@@ -45,17 +45,17 @@ int getBiggestFromVec(vector<int> vec) {
   return big;
 }
 
-void mergeSort(vector<int>& vec) {
+void mergeSort(vector<int>& main) {
     vector<vector<int> > pairs;
 
     int extra = -1;
-    vector<int>::iterator vecEnd = vec.end();
+    vector<int>::iterator vecEnd = main.end();
 
-    if (vec.size() % 2) {
-        extra = vec.back();
+    if (main.size() % 2) {
+        extra = main.back();
         vecEnd--;
     }
-    for (vector<int>::iterator it = vec.begin(); it != vecEnd; it += 2) {
+    for (vector<int>::iterator it = main.begin(); it != vecEnd; it += 2) {
         vector<int>::iterator nextIt = it + 1;
         vector<int> pair;
         pair.push_back(*it);
@@ -65,12 +65,25 @@ void mergeSort(vector<int>& vec) {
             pair.insert(pair.begin(), *nextIt) ;
         pairs.push_back(pair);
     }
-    std::cout << "[*] Pairs: " << std::endl;
-    printVecOfVec(pairs);
+    vector<int> newMain;
+    vector<int> newPend;
+    for (vector<vector<int> >::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+        newMain.push_back(it->back());
+        newPend.push_back(it->front());
+    }
+
     if (extra != -1) {
         std::cout << "[*] Extra: " << std::endl;
         std::cout << extra << std::endl;
     }
+    std::cout << "[*] Updated pairs: " << std::endl;
+    printVecOfVec(pairs);
+    std::cout << "[*] newMain: " << std::endl;
+    printVec(newMain);
+    std::cout << "[*] newPend: " << std::endl;
+    printVec(newPend);
+    if (newMain.size() > 1)
+        mergeSort(newMain);
 }
 
 bool argsToVec(int argc, char **argv, vector<int> &vec) {
