@@ -1,43 +1,15 @@
 #pragma once
 
 #include <algorithm>
+#include <exception>
 #include <iostream>
 #include <sstream>
 #include <sys/time.h>
 
-using std::string;
-
 template <typename C, typename CC> class PmergeMe {
 
 private:
-  void _printVec(C vec) {
-    std::cout << "[";
-    for (typename C::iterator it = vec.begin(); it != vec.end(); ++it) {
-      std::cout << *it;
-      if (it + 1 != vec.end())
-        std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-  }
-
-  void _printVecOfVec(CC vecOfVec) {
-    std::cout << "[";
-    for (typename CC::iterator vIt = vecOfVec.begin(); vIt != vecOfVec.end();
-         ++vIt) {
-      std::cout << "[";
-      for (typename C::iterator it = vIt->begin(); it != vIt->end(); ++it) {
-        std::cout << *it;
-        if (it + 1 != vIt->end())
-          std::cout << ", ";
-      }
-      std::cout << "]";
-      if (vIt + 1 != vecOfVec.end())
-        std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-  }
-
-  int _jacobsthal(int n) {
+  static int _jacobsthal(int n) {
     if (!n)
       return 0;
     if (n == 1)
@@ -45,7 +17,7 @@ private:
     return _jacobsthal(n - 1) + 2 * _jacobsthal(n - 2);
   }
 
-  C _getJacobsthalInsertionOrder(int n) {
+  static C _genJacobSeq(int n) {
     C jacobSeq;
 
     jacobSeq.push_back(0);
@@ -55,11 +27,14 @@ private:
       jacobSeq.push_back(next);
       next = jacobSeq[jacobSeq.size() - 1] + 2 * jacobSeq[jacobSeq.size() - 2];
     } while (next < n);
+    return jacobSeq;
+  }
 
+  static C _getJacobsthalInsertionOrder(int n, C jacobSeq) {
     // Add first the jacob numbers to order
     C order;
     for (typename C::reverse_iterator it = jacobSeq.rbegin();
-         it != jacobSeq.rend(); ++it) {
+         it != jacobSeq.rend(); ++it) {using std::string;
       if (*it < n)
         order.push_back(*it);
     }
@@ -73,16 +48,18 @@ private:
     return order;
   }
 
-  void _mergeInsertionSort(C &main) {
+  static C _mergeInsertionSort(C &main, const C &jacobSeq) {
     CC pairs;
-
     int extra = -1;
     typename C::iterator vecEnd = main.end();
 
+    // If the list is odd set the extra variable with the last number
+    // merge just works with pairs so we will need it later
     if (main.size() % 2) {
       extra = main.back();
       vecEnd--;
     }
+    // Sort the pairs with the smallest int first in each pair. format [ [1,2], [3,4]... ]
     for (typename C::iterator it = main.begin(); it != vecEnd; it += 2) {
       typename C::iterator nextIt = it + 1;
       C pair;
@@ -93,48 +70,62 @@ private:
         pair.insert(pair.begin(), *nextIt);
       pairs.push_back(pair);
     }
-    C newMain;
-    C newPend;
+
+    // Reset the main container and create the pend list (mindfuck)
+    C pend;
+    main.clear();
     for (typename CC::iterator it = pairs.begin(); it != pairs.end(); ++it) {
-      newMain.push_back(it->back());
-      newPend.push_back(it->front());
+      main.push_back(it->back());
+      pend.push_back(it->front());
     }
+
+    // The flag for extra is just -1 (ugly)
     if (extra != -1) {
-      newPend.push_back(extra);
+      pend.push_back(extra);
     }
-    if (newMain.size() > 1)
-      _mergeInsertionSort(newMain);
-    main = newMain;
-    C jacobSeq = _getJacobsthalInsertionOrder(newPend.size());
-    for (typename C::iterator it = jacobSeq.begin(); it != jacobSeq.end();
+    // Do it recursively until theres just one number
+    if (main.size() > 1)
+      _mergeInsertionSort(main, jacobSeq);
+
+    // Do the insertions based on the jacobsthal sequence
+    C insertOrder = _getJacobsthalInsertionOrder(pend.size(), jacobSeq);
+    for (typename C::iterator it = insertOrder.begin(); it != insertOrder.end();
          ++it) {
       typename C::iterator pos =
-          std::lower_bound(main.begin(), main.end(), newPend.at(*it));
-      main.insert(pos, newPend.at(*it));
+          std::lower_bound(main.begin(), main.end(), pend.at(*it));
+      main.insert(pos, pend.at(*it));
     }
+    return main;
   }
-  PmergeMe() {};
-  PmergeMe(PmergeMe &pmergeMe) {};
-  PmergeMe<C, CC> &operator=(const PmergeMe &be) { return *this; }
-public:
-  PmergeMe(C vec) {
-    std::cout << "Before";
-    _printVec(vec);
-    _mergeInsertionSort(vec);
-    std::cout << "After: ";
-    _printVec(vec);
-  }
-  ~PmergeMe() {};
-};
 
-template <typename C> C argsToContainer(int argc, char **argv) {
-  C vec;
-  for (int i = 1; i < argc; i++) {
-    int n;
-    std::stringstream ss(argv[i]);
-    if (!(ss >> n))
-      return vec;
-    vec.push_back(n);
+  // Prevent instantiation setting the default constructor private
+  PmergeMe() {};
+
+public:
+  static void printContainer(C vec) {
+    std::cout << "[";
+    for (typename C::iterator it = vec.begin(); it != vec.end(); ++it) {
+      std::cout << *it;
+      if (it + 1 != vec.end())
+        std::cout << ", ";
+    }
+    std::cout << "]" << std::endl;
   }
-  return vec;
-}
+
+  static C sort(C vec) {
+    C jacobSeq = _genJacobSeq(vec.size());
+    return _mergeInsertionSort(vec, jacobSeq);
+  }
+
+  static C argsToContainer(int argc, char **argv) {
+    C vec;
+    for (int i = 1; i < argc; i++) {
+      int n;
+      std::stringstream ss(argv[i]);
+      if (!(ss >> n))
+        throw std::exception();
+      vec.push_back(n);
+    }
+    return vec;
+  }
+};
