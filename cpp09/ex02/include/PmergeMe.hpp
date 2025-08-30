@@ -113,7 +113,9 @@ public:
   }
 
   static C sort(C vec) {
+    // Precalculate jacob sequence to avoid recalculating each iteration
     C jacobSeq = _genJacobSeq(vec.size());
+    // Do eet
     return _mergeInsertionSort(vec, jacobSeq);
   }
 
