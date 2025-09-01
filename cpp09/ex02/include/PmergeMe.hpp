@@ -6,7 +6,7 @@
 #include <sstream>
 #include <sys/time.h>
 
-template <typename C, typename CC> class PmergeMe {
+template <typename C> class PmergeMe {
 
 private:
   static int _jacobsthal(int n) {
@@ -34,7 +34,8 @@ private:
     // Add first the jacob numbers to order
     C order;
     for (typename C::reverse_iterator it = jacobSeq.rbegin();
-         it != jacobSeq.rend(); ++it) {using std::string;
+         it != jacobSeq.rend(); ++it) {
+      using std::string;
       if (*it < n)
         order.push_back(*it);
     }
@@ -49,7 +50,6 @@ private:
   }
 
   static C _mergeInsertionSort(C &main, const C &jacobSeq) {
-    CC pairs;
     int extra = -1;
     typename C::iterator vecEnd = main.end();
 
@@ -59,24 +59,28 @@ private:
       extra = main.back();
       vecEnd--;
     }
-    // Sort the pairs with the smallest int first in each pair. format [ [1,2], [3,4]... ]
+
+    C pairs;
+    // Sort the pairs with the smallest int first in each pair. format [ [1,2],
+    // [3,4]... ]
     for (typename C::iterator it = main.begin(); it != vecEnd; it += 2) {
       typename C::iterator nextIt = it + 1;
-      C pair;
-      pair.push_back(*it);
-      if (*it < *nextIt)
-        pair.push_back(*nextIt);
-      else
-        pair.insert(pair.begin(), *nextIt);
-      pairs.push_back(pair);
+      if (*it < *nextIt) {
+        pairs.push_back(*it);
+        pairs.push_back(*nextIt);
+      } else {
+        pairs.push_back(*nextIt);
+        pairs.push_back(*it);
+      }
     }
 
     // Reset the main container and create the pend list (mindfuck)
     C pend;
     main.clear();
-    for (typename CC::iterator it = pairs.begin(); it != pairs.end(); ++it) {
-      main.push_back(it->back());
-      pend.push_back(it->front());
+    for (typename C::iterator it = pairs.begin(); it != pairs.end(); it += 2) {
+      typename C::iterator nextIt = it + 1;
+      main.push_back(*nextIt);
+      pend.push_back(*it);
     }
 
     // The flag for extra is just -1 (ugly)
@@ -124,7 +128,7 @@ public:
     for (int i = 1; i < argc; i++) {
       int n;
       std::stringstream ss(argv[i]);
-      if (!(ss >> n))
+      if (!(ss >> n) || n < 0)
         throw std::exception();
       vec.push_back(n);
     }

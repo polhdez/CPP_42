@@ -5,8 +5,6 @@
 
 using std::deque;
 using std::vector;
-typedef PmergeMe<vector<int>, vector<vector<int> > > PmergeMeVec;
-typedef PmergeMe<deque<int>, deque<deque<int> > > PmergeMeDeq;
 
 long timestamp() {
   struct timeval tv;
@@ -23,8 +21,8 @@ int main(int argc, char **argv) {
   vector<int> intVec;
   deque<int> intDeq;
   try {
-    intVec = PmergeMeVec::argsToContainer(argc, argv);
-    intDeq = PmergeMeDeq::argsToContainer(argc, argv);
+    intVec = PmergeMe<vector<int> >::argsToContainer(argc, argv);
+    intDeq = PmergeMe<deque<int> >::argsToContainer(argc, argv);
   } catch (std::exception &e) {
     std::cerr << "[!] Wrong input!" << std::endl;
     return 1;
@@ -33,14 +31,14 @@ int main(int argc, char **argv) {
   // Execute functions and compare timestamps
   std::cout << "Processing vector..." << std::endl;
   long vecTime = timestamp();
-  vector<int> sortedVec = PmergeMeVec::sort(intVec);
+  vector<int> sortedVec = PmergeMe<vector<int> >::sort(intVec);
   vecTime = timestamp() - vecTime;
-  PmergeMeVec::printContainer(sortedVec);
+  PmergeMe<vector<int> >::printContainer(sortedVec);
   std::cout << "Processing deque..." << std::endl;
   long deqTime = timestamp();
-  deque<int> sortedDeq = PmergeMeDeq::sort(intDeq);
+  deque<int> sortedDeq = PmergeMe<deque<int> >::sort(intDeq);
   deqTime = timestamp() - deqTime;
-  PmergeMeDeq::printContainer(sortedDeq);
+  PmergeMe<deque<int> >::printContainer(sortedDeq);
   std::cout << "[Benchmark] vector took " << vecTime << " µs" << std::endl;
   std::cout << "[Benchmark] deque  took " << deqTime << " µs" << std::endl;
 }

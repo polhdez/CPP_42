@@ -1,5 +1,5 @@
 CXX := c++
-CXXFLAGS = -g -Wall -Werror -Wextra -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra -g -std=c++98
 
 NAME  = PmergeMe
 SRC_DIR := src
